@@ -41,10 +41,10 @@ fn main() -> Result<()> {
     for page in data.pages {
         let markdown = parse_page(&page);
         let safe_title = sanitize_filename(&page.title);
-        let output_path = args.outdir.join(format!("{}.md", safe_title));
+        let output_path = args.outdir.join(format!("{safe_title}.md"));
 
         fs::write(&output_path, markdown)
-            .with_context(|| format!("Failed to write to {:?}", output_path))?;
+            .with_context(|| format!("Failed to write to {output_path:?}"))?;
     }
 
     println!("Conversion completed! Files are in {:?}", args.outdir);

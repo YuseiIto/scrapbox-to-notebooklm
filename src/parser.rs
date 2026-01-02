@@ -34,7 +34,7 @@ pub fn parse_page(page: &Page) -> String {
         if raw_text.starts_with("code:") {
             inside_code_block = true;
             let lang = raw_text.trim_start_matches("code:").trim();
-            output.push_str(&format!("```{}\n", lang));
+            output.push_str(&format!("```{lang}\n"));
             continue;
         }
 
@@ -42,7 +42,7 @@ pub fn parse_page(page: &Page) -> String {
 
         // 最初の行はタイトルとして扱う
         if i == 0 {
-            output.push_str(&format!("# {}\n\n", content));
+            output.push_str(&format!("# {content}\n\n"));
             continue;
         }
 
@@ -56,7 +56,7 @@ pub fn parse_page(page: &Page) -> String {
         // インデントがある場合はリスト、ない場合は段落
         if indent > 0 {
             let prefix = "  ".repeat(indent - 1) + "- ";
-            output.push_str(&format!("{}{}\n", prefix, formatted));
+            output.push_str(&format!("{prefix}{formatted}\n"));
         } else {
             output.push_str(&formatted);
             output.push_str("\n\n");
@@ -82,13 +82,13 @@ fn format_content(text: &str) -> Cow<str> {
 
         // 装飾 (太字, 斜体, 打消)
         if let Some(stripped) = inner.strip_prefix("* ") {
-            return format!("**{}**", stripped);
+            return format!("**{stripped}**");
         }
         if let Some(stripped) = inner.strip_prefix("/ ") {
-            return format!("*{}*", stripped);
+            return format!("*{stripped}*");
         }
         if let Some(stripped) = inner.strip_prefix("- ") {
-            return format!("~~{}~~", stripped);
+            return format!("~~{stripped}~~");
         }
 
         // 外部リンク (http:// または https://)
@@ -110,13 +110,13 @@ fn format_content(text: &str) -> Cow<str> {
                         .map(|(_, s)| *s)
                         .collect();
                     let text = text_parts.join(" ");
-                    return format!("[{}]({})", text, url);
+                    return format!("[{text}]({url})");
                 }
             }
         }
 
         // 内部リンク
-        format!("[[{}]]", inner)
+        format!("[[{inner}]]")
     })
 }
 
